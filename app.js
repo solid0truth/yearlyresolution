@@ -139,6 +139,74 @@ function editSelectedNodeTitle() {
     startEditingTitle(selectedNodeId);
 }
 
+// Toggle inline display of attributes
+function toggleInlineDisplay(nodeId, attr, checked) {
+    const node = nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    if (!node.inlineDisplay) {
+        node.inlineDisplay = [];
+    }
+
+    if (checked) {
+        // Add attribute to inline display if not already there
+        if (!node.inlineDisplay.includes(attr)) {
+            node.inlineDisplay.push(attr);
+        }
+    } else {
+        // Remove attribute from inline display
+        node.inlineDisplay = node.inlineDisplay.filter(a => a !== attr);
+    }
+
+    saveData();
+    renderMindmap();
+    selectNode(nodeId, false);
+}
+
+// Start inline editing for time/money
+function startInlineEdit(nodeId, attr, element) {
+    const node = nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    // Get current value (remove emoji prefix)
+    const currentValue = node[attr] || '';
+
+    // Create input element
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentValue;
+    input.style.cssText = 'width: 80px; padding: 2px 4px; border: 1px solid #007aff; border-radius: 3px; font-size: 0.9em;';
+
+    // Replace the span with input
+    const parent = element.parentElement;
+    parent.replaceChild(input, element);
+    input.focus();
+    input.select();
+
+    // Save on blur or Enter
+    const finishEdit = () => {
+        const newValue = input.value.trim();
+        node[attr] = newValue;
+        saveData();
+        renderMindmap();
+        selectNode(nodeId, false);
+    };
+
+    input.onblur = finishEdit;
+    input.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            e.stopPropagation();
+            finishEdit();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+            renderMindmap();
+            selectNode(nodeId, false);
+        }
+    };
+}
+
 function addSiblingNode() {
     if (!selectedNodeId) {
         showAddNodeDialog();
@@ -175,7 +243,8 @@ function addSiblingNode() {
         recordFrequency: 'daily',
         timeBudget: '',
         moneyBudget: '',
-        bookBudget: ''
+        bookBudget: '',
+        inlineDisplay: []  // Array of attribute names to show inline when collapsed
     };
 
     nodes.push(newNode);
@@ -226,7 +295,8 @@ function addChildNode() {
         recordFrequency: 'daily',
         timeBudget: '',
         moneyBudget: '',
-        bookBudget: ''
+        bookBudget: '',
+        inlineDisplay: []
     };
 
     nodes.push(newNode);
@@ -512,7 +582,8 @@ function addNodeBefore(referenceNodeId) {
         book: '',
         timeBudget: '',
         moneyBudget: '',
-        bookBudget: ''
+        bookBudget: '',
+        inlineDisplay: []
     };
 
     nodes.push(newNode);
@@ -903,6 +974,67 @@ function renderNode(node) {
         `;
     }
 
+    // Build inline display attributes
+    const inlineAttrs = node.inlineDisplay || [];
+    let inlineHTML = '';
+
+    if (inlineAttrs.length > 0) {
+        const inlineItems = [];
+        inlineAttrs.forEach(attr => {
+            if (node[attr]) {
+                let displayValue = '';
+                switch(attr) {
+                    case 'time':
+                        displayValue = `⏱ ${node.time}`;
+                        break;
+                    case 'money':
+                        displayValue = `💰 ${node.money}`;
+                        break;
+                    case 'book':
+                        displayValue = `📚 ${parseBook(node.book)}권`;
+                        break;
+                    case 'action':
+                        displayValue = `📋 ${node.action}`;
+                        break;
+                    case 'when':
+                        displayValue = `📅 ${node.when}`;
+                        break;
+                    case 'where':
+                        displayValue = `📍 ${node.where}`;
+                        break;
+                    case 'with':
+                        displayValue = `👥 ${node.with}`;
+                        break;
+                    case 'knowledge':
+                        displayValue = `📖 ${node.knowledge}`;
+                        break;
+                    case 'tools':
+                        displayValue = `🔧 ${node.tools}`;
+                        break;
+                    case 'longTermGoal':
+                        displayValue = `🎯 ${node.longTermGoal}`;
+                        break;
+                    case 'yearGoal':
+                        displayValue = `📆 ${node.yearGoal}`;
+                        break;
+                }
+                if (displayValue) {
+                    // For leaf nodes, make time and money editable inline
+                    if (!hasChildren && (attr === 'time' || attr === 'money')) {
+                        inlineItems.push(`<span class="inline-editable"
+                            ondblclick="event.stopPropagation(); startInlineEdit(${node.id}, '${attr}', this)"
+                            style="cursor: text;">${displayValue}</span>`);
+                    } else {
+                        inlineItems.push(`<span>${displayValue}</span>`);
+                    }
+                }
+            }
+        });
+        if (inlineItems.length > 0) {
+            inlineHTML = `<span class="inline-display" style="color: #86868b; font-size: 0.9em; margin-left: 8px;">${inlineItems.join(' · ')}</span>`;
+        }
+    }
+
     const summary = hasChildren
         ? `<div class="node-summary">
             <div class="budget-indicator ${actuals.time > parseTime(node.timeBudget || '999h/w') ? 'over' : ''}">
@@ -948,6 +1080,7 @@ function renderNode(node) {
                       onblur="finishEditingTitle(${node.id})"
                       onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();} if(event.key==='Escape'){event.preventDefault();event.stopPropagation();this.textContent='${node.title.replace(/'/g, "\\'")}';this.blur();}"
                       style="cursor: default; padding: 2px 4px; border-radius: 3px;">${node.title}</span>
+                ${inlineHTML}
                 ${summary}
                 <button class="context-menu-button" onclick="event.stopPropagation(); toggleContextMenu(${node.id}, event)">⋯</button>
                 <div class="context-menu" id="context-menu-${node.id}">
@@ -1104,6 +1237,34 @@ function renderNode(node) {
                                    ${!node.shareEnabled ? 'disabled' : ''}
                                    placeholder="blog, instagram, linkedin..."
                                    style="flex: 1; padding: 8px; border: 1px solid #d2d2d7; border-radius: 6px; font-size: 14px;">
+                        </div>
+                    </div>
+                    <div class="detail-item" style="grid-column: 1 / -1;">
+                        <label class="detail-label">접었을 때 제목 옆에 표시할 속성</label>
+                        <div class="detail-value" style="display: flex; flex-wrap: wrap; gap: 12px;">
+                            ${['longTermGoal', 'yearGoal', 'action', 'when', 'where', 'with', 'knowledge', 'tools', 'time', 'money', 'book'].map(attr => {
+                                const labels = {
+                                    longTermGoal: '🎯 장기목표',
+                                    yearGoal: '📆 올해목표',
+                                    action: '📋 행동',
+                                    when: '📅 언제',
+                                    where: '📍 어디서',
+                                    with: '👥 누구와',
+                                    knowledge: '📖 배움',
+                                    tools: '🔧 도구',
+                                    time: '⏱ 시간',
+                                    money: '💰 비용',
+                                    book: '📚 책'
+                                };
+                                const isChecked = (node.inlineDisplay || []).includes(attr);
+                                return `<label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                                    <input type="checkbox"
+                                           ${isChecked ? 'checked' : ''}
+                                           onchange="toggleInlineDisplay(${node.id}, '${attr}', this.checked)"
+                                           style="cursor: pointer;">
+                                    <span style="font-size: 13px;">${labels[attr]}</span>
+                                </label>`;
+                            }).join('')}
                         </div>
                     </div>
                 </div>
