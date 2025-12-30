@@ -652,6 +652,10 @@ function promoteNodeLevel() {
         node.parent = newParent ? newParent.id : null;
     }
 
+    // Update all existing children's levels to maintain parent-child relationship
+    // Children should always be at parent level + 1
+    updateChildrenLevelsRecursive(selectedNodeId);
+
     // Adopt nodes below that are exactly 1 level deeper
     // They should become children of the promoted node
     const childLevel = `L${newLevel + 1}`;
@@ -665,14 +669,10 @@ function promoteNodeLevel() {
         }
 
         // If exactly 1 level deeper, make it our child
-        // Keep their existing level - don't change it
         if (potentialChild.level === childLevel) {
             potentialChild.parent = selectedNodeId;
         }
     }
-
-    // Don't update children levels - they should keep their current levels
-    // The adopted nodes are already at the correct level (newLevel + 1)
 
     renderMindmap();
     selectNode(selectedNodeId, false);
@@ -726,20 +726,21 @@ function demoteNodeLevel() {
 
     node.parent = newParent ? newParent.id : null;
 
-    // If this node has children at the same level now, they should become siblings
-    // Re-parent them to this node's new parent
+    // First, update all children to maintain parent-child level relationship
+    updateChildrenLevelsRecursive(selectedNodeId);
+
+    // Then check if any children are now at invalid levels (same or shallower than parent)
+    // and re-parent them as siblings
     const children = getChildren(selectedNodeId);
     children.forEach(child => {
         const childLevel = parseInt(child.level.substring(1));
         if (childLevel <= newLevel) {
             // Child is at same or shallower level, make it a sibling
             child.parent = node.parent;
+            // Update this child's descendants too
+            updateChildrenLevelsRecursive(child.id);
         }
-        // Children at deeper levels keep their current level and parent relationship
     });
-
-    // Don't update children levels - they should keep their current levels
-    // Only the parent relationships change
 
     renderMindmap();
     selectNode(selectedNodeId, false);
