@@ -542,6 +542,9 @@ function promoteNodeLevel() {
         return;
     }
 
+    // Get current position in nodes array
+    const nodeIndex = nodes.indexOf(node);
+
     // Simply decrease level by 1
     const newLevel = currentLevel - 1;
     node.level = `L${newLevel}`;
@@ -565,7 +568,25 @@ function promoteNodeLevel() {
         node.parent = newParent ? newParent.id : null;
     }
 
-    // Update all children levels recursively
+    // Adopt nodes below that are exactly 1 level deeper
+    // They should become children of the promoted node
+    const childLevel = `L${newLevel + 1}`;
+    for (let i = nodeIndex + 1; i < nodes.length; i++) {
+        const potentialChild = nodes[i];
+        const potentialChildLevel = parseInt(potentialChild.level.substring(1));
+
+        // Stop if we hit a node at same or shallower level
+        if (potentialChildLevel <= newLevel) {
+            break;
+        }
+
+        // If exactly 1 level deeper, make it our child
+        if (potentialChild.level === childLevel) {
+            potentialChild.parent = selectedNodeId;
+        }
+    }
+
+    // Update all children levels recursively (in case we need to adjust deeper descendants)
     updateChildrenLevelsRecursive(selectedNodeId);
 
     renderMindmap();
@@ -620,7 +641,18 @@ function demoteNodeLevel() {
 
     node.parent = newParent ? newParent.id : null;
 
-    // Update all children levels recursively
+    // If this node has children at the same level now, they should become siblings
+    // Re-parent them to this node's new parent
+    const children = getChildren(selectedNodeId);
+    children.forEach(child => {
+        const childLevel = parseInt(child.level.substring(1));
+        if (childLevel <= newLevel) {
+            // Child is at same or shallower level, make it a sibling
+            child.parent = node.parent;
+        }
+    });
+
+    // Update all remaining children levels recursively
     updateChildrenLevelsRecursive(selectedNodeId);
 
     renderMindmap();
