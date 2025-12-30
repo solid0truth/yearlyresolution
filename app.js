@@ -527,26 +527,43 @@ function addNodeBefore(referenceNodeId) {
     saveData();
 }
 
-// Level promotion/demotion functions
+// Level promotion/demotion functions (simple indentation style)
 function promoteNodeLevel() {
     if (!selectedNodeId) return;
 
     const node = nodes.find(n => n.id === selectedNodeId);
     if (!node) return;
 
-    // Cannot promote root nodes (L1) or nodes without parent
-    if (node.level === 'L1' || !node.parent) {
-        console.log('Cannot promote root level node');
+    const currentLevel = parseInt(node.level.substring(1));
+
+    // Can always promote until L1
+    if (currentLevel === 1) {
+        console.log('Already at top level (L1)');
         return;
     }
 
-    const parent = nodes.find(n => n.id === node.parent);
-    if (!parent) return;
+    // Simply decrease level by 1
+    const newLevel = currentLevel - 1;
+    node.level = `L${newLevel}`;
 
-    // Promote: make this node a sibling of its parent
-    node.parent = parent.parent;
-    const currentLevel = parseInt(node.level.substring(1));
-    node.level = `L${currentLevel - 1}`;
+    // Find new parent: closest visible node above us at (newLevel - 1)
+    if (newLevel === 1) {
+        node.parent = null; // L1 nodes have no parent
+    } else {
+        const visibleNodes = getAllVisibleNodes();
+        const currentIndex = visibleNodes.indexOf(selectedNodeId);
+        let newParent = null;
+
+        for (let i = currentIndex - 1; i >= 0; i--) {
+            const candidate = nodes.find(n => n.id === visibleNodes[i]);
+            if (candidate && candidate.level === `L${newLevel - 1}`) {
+                newParent = candidate;
+                break;
+            }
+        }
+
+        node.parent = newParent ? newParent.id : null;
+    }
 
     // Update all children levels recursively
     updateChildrenLevelsRecursive(selectedNodeId);
@@ -564,38 +581,44 @@ function demoteNodeLevel() {
 
     const currentLevel = parseInt(node.level.substring(1));
 
-    // Cannot demote to L6 or beyond
+    // Cannot demote beyond L5
     if (currentLevel >= 5) {
         alert('Cannot exceed maximum level (L5)');
         return;
     }
 
-    // Find the visually previous sibling by checking the rendered order
+    // Check restriction: can only be 1 level deeper than node above
     const visibleNodes = getAllVisibleNodes();
-    const currentVisualIndex = visibleNodes.indexOf(selectedNodeId);
-    let previousSibling = null;
+    const currentIndex = visibleNodes.indexOf(selectedNodeId);
 
-    if (currentVisualIndex > 0) {
-        // Look backwards in visual order for a sibling at the same level
-        for (let i = currentVisualIndex - 1; i >= 0; i--) {
-            const candidateNode = nodes.find(n => n.id === visibleNodes[i]);
-            if (candidateNode &&
-                candidateNode.parent === node.parent &&
-                candidateNode.level === node.level) {
-                previousSibling = candidateNode;
-                break;
+    if (currentIndex > 0) {
+        const nodeAbove = nodes.find(n => n.id === visibleNodes[currentIndex - 1]);
+        if (nodeAbove) {
+            const levelAbove = parseInt(nodeAbove.level.substring(1));
+            const maxAllowedLevel = levelAbove + 1;
+
+            if (currentLevel + 1 > maxAllowedLevel) {
+                console.log(`Cannot demote: node above is L${levelAbove}, maximum allowed is L${maxAllowedLevel}`);
+                return;
             }
         }
     }
 
-    if (!previousSibling) {
-        console.log('No previous sibling to demote under');
-        return;
+    // Simply increase level by 1
+    const newLevel = currentLevel + 1;
+    node.level = `L${newLevel}`;
+
+    // Find new parent: closest visible node above us at (newLevel - 1)
+    let newParent = null;
+    for (let i = currentIndex - 1; i >= 0; i--) {
+        const candidate = nodes.find(n => n.id === visibleNodes[i]);
+        if (candidate && candidate.level === `L${newLevel - 1}`) {
+            newParent = candidate;
+            break;
+        }
     }
 
-    // Demote: make this node a child of the previous sibling
-    node.parent = previousSibling.id;
-    node.level = `L${currentLevel + 1}`;
+    node.parent = newParent ? newParent.id : null;
 
     // Update all children levels recursively
     updateChildrenLevelsRecursive(selectedNodeId);
