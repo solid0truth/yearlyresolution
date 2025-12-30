@@ -47,10 +47,12 @@ Complete application logic including:
 ### data.json
 Default node data in JSON format. Contains the initial mindmap structure with sample nodes for "Me", "Knowledge management", "Body / Health", etc.
 
-## Keyboard Shortcuts
+## Keyboard Shortcuts & Mouse Actions
 
-| Key | Action |
-|-----|--------|
+| Input | Action |
+|-------|--------|
+| Click | Select node |
+| Double-click title | Edit node title |
 | ↑↓ | Navigate between nodes |
 | ←→ | Collapse/Expand nodes |
 | Tab | Add child node |
@@ -58,6 +60,7 @@ Default node data in JSON format. Contains the initial mindmap structure with sa
 | Space | Edit node title |
 | D | Toggle details |
 | Backspace/Delete | Delete node |
+| Drag & Drop | Reorganize nodes |
 
 ## Getting Started
 

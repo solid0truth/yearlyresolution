@@ -762,10 +762,10 @@ function renderNode(node) {
                 <span class="node-title"
                       contenteditable="false"
                       id="title-${node.id}"
-                      onclick="event.stopPropagation(); startEditingTitle(${node.id})"
+                      ondblclick="event.stopPropagation(); startEditingTitle(${node.id})"
                       onblur="finishEditingTitle(${node.id})"
                       onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();} if(event.key==='Escape'){event.preventDefault();event.stopPropagation();this.textContent='${node.title.replace(/'/g, "\\'")}';this.blur();}"
-                      style="cursor: text; padding: 2px 4px; border-radius: 3px;">${node.title}</span>
+                      style="cursor: default; padding: 2px 4px; border-radius: 3px;">${node.title}</span>
                 ${summary}
                 <button class="context-menu-button" onclick="event.stopPropagation(); toggleContextMenu(${node.id}, event)">⋯</button>
                 <div class="context-menu" id="context-menu-${node.id}">
