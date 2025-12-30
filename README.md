@@ -55,6 +55,8 @@ Default node data in JSON format. Contains the initial mindmap structure with sa
 | Double-click title | Edit node title |
 | ↑↓ | Navigate between nodes |
 | ←→ | Collapse/Expand nodes |
+| Shift+← | Promote level (e.g., L3→L2) |
+| Shift+→ | Demote level (e.g., L2→L3) |
 | Tab | Add child node |
 | Enter | Add sibling node |
 | Space | Edit node title |

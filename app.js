@@ -527,6 +527,90 @@ function addNodeBefore(referenceNodeId) {
     saveData();
 }
 
+// Level promotion/demotion functions
+function promoteNodeLevel() {
+    if (!selectedNodeId) return;
+
+    const node = nodes.find(n => n.id === selectedNodeId);
+    if (!node) return;
+
+    // Cannot promote root nodes (L1) or nodes without parent
+    if (node.level === 'L1' || !node.parent) {
+        console.log('Cannot promote root level node');
+        return;
+    }
+
+    const parent = nodes.find(n => n.id === node.parent);
+    if (!parent) return;
+
+    // Promote: make this node a sibling of its parent
+    node.parent = parent.parent;
+    const currentLevel = parseInt(node.level.substring(1));
+    node.level = `L${currentLevel - 1}`;
+
+    // Update all children levels recursively
+    updateChildrenLevelsRecursive(selectedNodeId);
+
+    renderMindmap();
+    selectNode(selectedNodeId, false);
+    saveData();
+}
+
+function demoteNodeLevel() {
+    if (!selectedNodeId) return;
+
+    const node = nodes.find(n => n.id === selectedNodeId);
+    if (!node) return;
+
+    const currentLevel = parseInt(node.level.substring(1));
+
+    // Cannot demote to L6 or beyond
+    if (currentLevel >= 5) {
+        alert('Cannot exceed maximum level (L5)');
+        return;
+    }
+
+    // Find previous sibling to become parent
+    const siblings = nodes.filter(n =>
+        n.parent === node.parent &&
+        n.level === node.level &&
+        n.id !== selectedNodeId
+    );
+
+    if (siblings.length === 0) {
+        console.log('No sibling to demote under');
+        return;
+    }
+
+    // Use the last sibling as new parent
+    const newParent = siblings[siblings.length - 1];
+
+    // Demote: make this node a child of previous sibling
+    node.parent = newParent.id;
+    node.level = `L${currentLevel + 1}`;
+
+    // Update all children levels recursively
+    updateChildrenLevelsRecursive(selectedNodeId);
+
+    renderMindmap();
+    selectNode(selectedNodeId, false);
+    saveData();
+}
+
+// Helper function to recursively update children levels
+function updateChildrenLevelsRecursive(parentId) {
+    const parent = nodes.find(n => n.id === parentId);
+    if (!parent) return;
+
+    const parentLevel = parseInt(parent.level.substring(1));
+    const children = nodes.filter(n => n.parent === parentId);
+
+    children.forEach(child => {
+        child.level = `L${parentLevel + 1}`;
+        updateChildrenLevelsRecursive(child.id);
+    });
+}
+
 // Global keyboard event handler
 document.addEventListener('keydown', function(e) {
     // Ignore if typing in input/textarea
@@ -555,11 +639,19 @@ document.addEventListener('keydown', function(e) {
             break;
         case 'ArrowLeft':
             e.preventDefault();
-            collapseSelectedNode();
+            if (e.shiftKey) {
+                promoteNodeLevel(); // Shift+Left: 레벨 승격
+            } else {
+                collapseSelectedNode();
+            }
             break;
         case 'ArrowRight':
             e.preventDefault();
-            expandSelectedNode();
+            if (e.shiftKey) {
+                demoteNodeLevel(); // Shift+Right: 레벨 강등
+            } else {
+                expandSelectedNode();
+            }
             break;
         case 'Tab':
             e.preventDefault();
