@@ -11,164 +11,12 @@
  * - Budget tracking and aggregation
  * - Local storage persistence
  * - CSV import/export
+ * - Dynamic data loading from data.json
  */
 
-// Initial data structure - Default nodes
-// See data.json for the raw data format
-let nodes = [
-    {
-        id: 1,
-        level: 'L1',
-        title: 'Me',
-        parent: null,
-        collapsed: false,
-        priority: '',
-        action: '',
-        time: '',
-        money: '',
-        knowledge: '',
-        when: '',
-        where: '',
-        with: '',
-        tools: '',
-        book: '',
-        recordEnabled: false,
-        longTermGoal: '',
-        yearGoal: '',
-        shareEnabled: false,
-        shareTo: '',
-        recordFrequency: 'daily',
-        timeBudget: '100h/w',
-        moneyBudget: '2000000/w',
-        bookBudget: '50'
-    },
-    {
-        id: 2,
-        level: 'L2',
-        title: 'Knowledge management',
-        parent: 1,
-        collapsed: false,
-        priority: 'High',
-        action: '',
-        time: '',
-        money: '',
-        knowledge: '',
-        when: '',
-        where: '',
-        with: '',
-        tools: '',
-        book: '',
-        recordEnabled: false,
-        longTermGoal: '',
-        yearGoal: '',
-        shareEnabled: false,
-        shareTo: '',
-        recordFrequency: 'daily',
-        timeBudget: '10h/w',
-        moneyBudget: '50000/w',
-        bookBudget: '5'
-    },
-    {
-        id: 3,
-        level: 'L3',
-        title: 'Digitalization',
-        parent: 2,
-        collapsed: false,
-        priority: 'High',
-        action: 'Digitalize all notes',
-        time: '2h/w',
-        money: '0/w',
-        knowledge: 'Obsidian, Markdown',
-        when: 'Q1 2026',
-        where: 'Home',
-        with: '',
-        tools: 'Obsidian, Scanner',
-        book: '[Building a Second Brain] +2',
-        recordEnabled: true,
-        longTermGoal: '',
-        yearGoal: '',
-        shareEnabled: false,
-        shareTo: '',
-        recordFrequency: 'daily'
-    },
-    {
-        id: 4,
-        level: 'L2',
-        title: 'Body / Health',
-        parent: 1,
-        collapsed: false,
-        priority: 'High',
-        action: '',
-        time: '',
-        money: '',
-        knowledge: '',
-        when: '',
-        where: '',
-        with: '',
-        tools: '',
-        book: '',
-        recordEnabled: false,
-        longTermGoal: '',
-        yearGoal: '',
-        shareEnabled: false,
-        shareTo: '',
-        recordFrequency: 'daily',
-        timeBudget: '15h/w',
-        moneyBudget: '100000/w',
-        bookBudget: '3'
-    },
-    {
-        id: 5,
-        level: 'L3',
-        title: 'Workout',
-        parent: 4,
-        collapsed: false,
-        priority: 'High',
-        action: '',
-        time: '',
-        money: '',
-        knowledge: '',
-        when: '',
-        where: '',
-        with: '',
-        tools: '',
-        book: '',
-        recordEnabled: false,
-        longTermGoal: '',
-        yearGoal: '',
-        shareEnabled: false,
-        shareTo: '',
-        recordFrequency: 'daily',
-        timeBudget: '7h/w',
-        moneyBudget: '50000/w',
-        bookBudget: '2'
-    },
-    {
-        id: 6,
-        level: 'L4',
-        title: 'Running',
-        parent: 5,
-        collapsed: false,
-        priority: 'High',
-        action: 'Run 3 times per week',
-        time: '5h/w',
-        money: '30000/m',
-        knowledge: 'Running form',
-        when: 'Year-round',
-        where: 'Park',
-        with: '',
-        tools: 'Running shoes, GPS watch',
-        book: '[Born to Run] [80/20 Running]',
-        recordEnabled: true,
-        longTermGoal: '',
-        yearGoal: '',
-        shareEnabled: false,
-        shareTo: '',
-        recordFrequency: 'daily'
-    }
-];
-
-let nextId = 7;
+// Global state variables
+let nodes = [];
+let nextId = 1;
 let selectedNodeId = null;
 let draggedNodeId = null;
 let draggedNode = null;
@@ -1309,11 +1157,59 @@ function manualSave() {
     }, 1500);
 }
 
-function loadData() {
+async function loadData() {
+    // First, try to load from localStorage
     const saved = localStorage.getItem('mindmapNodes');
     if (saved) {
         nodes = JSON.parse(saved);
         nextId = Math.max(...nodes.map(n => n.id)) + 1;
+        console.log('Loaded data from localStorage');
+        return;
+    }
+
+    // If no saved data, load from data.json
+    try {
+        const response = await fetch('data.json');
+        if (!response.ok) {
+            throw new Error('Failed to load data.json');
+        }
+        nodes = await response.json();
+        nextId = Math.max(...nodes.map(n => n.id)) + 1;
+        console.log('Loaded initial data from data.json');
+
+        // Save to localStorage for future use
+        saveData();
+    } catch (error) {
+        console.error('Error loading data:', error);
+        // Initialize with empty root node if loading fails
+        nodes = [{
+            id: 1,
+            level: 'L1',
+            title: 'My 2026 Goals',
+            parent: null,
+            collapsed: false,
+            priority: '',
+            action: '',
+            time: '',
+            money: '',
+            knowledge: '',
+            when: '',
+            where: '',
+            with: '',
+            tools: '',
+            book: '',
+            recordEnabled: false,
+            longTermGoal: '',
+            yearGoal: '',
+            shareEnabled: false,
+            shareTo: '',
+            recordFrequency: 'daily',
+            timeBudget: '',
+            moneyBudget: '',
+            bookBudget: ''
+        }];
+        nextId = 2;
+        console.log('Initialized with empty root node');
     }
 }
 
@@ -1392,14 +1288,19 @@ function loadFromCSV() {
     input.click();
 }
 
-// Initialize
-loadData();
-renderMindmap();
+// Initialize application
+(async function init() {
+    // Load data (from localStorage or data.json)
+    await loadData();
 
-// Auto-select first node
-setTimeout(() => {
-    const firstNode = getAllVisibleNodes()[0];
-    if (firstNode) {
-        selectNode(firstNode, false);
-    }
-}, 100);
+    // Render the mindmap
+    renderMindmap();
+
+    // Auto-select first node
+    setTimeout(() => {
+        const firstNode = getAllVisibleNodes()[0];
+        if (firstNode) {
+            selectNode(firstNode, false);
+        }
+    }, 100);
+})();
