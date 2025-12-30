@@ -365,17 +365,42 @@ function handleDrop(event, targetId) {
         return;
     }
 
+    // Helper function to recursively update children levels
+    function updateChildrenLevels(parentId) {
+        const parent = nodes.find(n => n.id === parentId);
+        if (!parent) return;
+
+        const parentLevel = parseInt(parent.level.substring(1));
+        const children = nodes.filter(n => n.parent === parentId);
+
+        children.forEach(child => {
+            child.level = `L${parentLevel + 1}`;
+            updateChildrenLevels(child.id); // Recursively update grandchildren
+        });
+    }
+
     // Determine action based on drop position
     if (mouseX < rect.width * 0.25) {
         // Make child of target
         draggedNodeObj.parent = targetId;
         const targetLevel = parseInt(targetNode.level.substring(1));
-        draggedNodeObj.level = `L${targetLevel + 1}`;
+        const newLevel = targetLevel + 1;
+
+        // Check if exceeds max level (L5)
+        if (newLevel > 5) {
+            alert('Cannot exceed maximum level (L5)');
+            return;
+        }
+
+        draggedNodeObj.level = `L${newLevel}`;
     } else {
         // Make sibling (same level as target)
         draggedNodeObj.parent = targetNode.parent;
         draggedNodeObj.level = targetNode.level;
     }
+
+    // Update all children levels recursively
+    updateChildrenLevels(draggedNodeId);
 
     renderMindmap();
     saveData();

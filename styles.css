@@ -121,10 +121,6 @@ h1 {
     align-items: center;
 }
 
-.node-header:hover {
-    background: rgba(0,0,0,0.03);
-}
-
 .node.selected .node-header {
     background: rgba(0, 122, 255, 0.1);
     border-left: 3px solid #007aff;
