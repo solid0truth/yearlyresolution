@@ -565,7 +565,7 @@
         <div class="actions">
             <button onclick="showAddNodeDialog()">+ Add Node</button>
             <button class="secondary" onclick="exportCSV()">Export CSV</button>
-            <button class="secondary" onclick="saveData()">Save</button>
+            <button class="secondary" onclick="manualSave()">Save</button>
             <button class="secondary" onclick="loadFromCSV()">Import CSV</button>
         </div>
 
@@ -1464,7 +1464,7 @@
                               id="title-${node.id}"
                               onclick="event.stopPropagation(); startEditingTitle(${node.id})"
                               onblur="finishEditingTitle(${node.id})"
-                              onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();} if(event.key==='Escape'){this.textContent='${node.title.replace(/'/g, "\\'")}';this.blur();}"
+                              onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();} if(event.key==='Escape'){event.preventDefault();event.stopPropagation();this.textContent='${node.title.replace(/'/g, "\\'")}';this.blur();}"
                               style="cursor: text; padding: 2px 4px; border-radius: 3px;">${node.title}</span>
                         ${summary}
                         <button class="context-menu-button" onclick="event.stopPropagation(); toggleContextMenu(${node.id}, event)">⋯</button>
@@ -1841,7 +1841,20 @@
 
         function saveData() {
             localStorage.setItem('mindmapNodes', JSON.stringify(nodes));
-            alert('Data saved!');
+            // Silent auto-save - no alert needed
+        }
+
+        function manualSave() {
+            saveData();
+            // Show brief feedback without blocking
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Saved!';
+            btn.style.background = '#34c759';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 1500);
         }
 
         function loadData() {
