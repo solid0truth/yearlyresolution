@@ -581,13 +581,14 @@ function promoteNodeLevel() {
         }
 
         // If exactly 1 level deeper, make it our child
+        // Keep their existing level - don't change it
         if (potentialChild.level === childLevel) {
             potentialChild.parent = selectedNodeId;
         }
     }
 
-    // Update all children levels recursively (in case we need to adjust deeper descendants)
-    updateChildrenLevelsRecursive(selectedNodeId);
+    // Don't update children levels - they should keep their current levels
+    // The adopted nodes are already at the correct level (newLevel + 1)
 
     renderMindmap();
     selectNode(selectedNodeId, false);
@@ -650,10 +651,11 @@ function demoteNodeLevel() {
             // Child is at same or shallower level, make it a sibling
             child.parent = node.parent;
         }
+        // Children at deeper levels keep their current level and parent relationship
     });
 
-    // Update all remaining children levels recursively
-    updateChildrenLevelsRecursive(selectedNodeId);
+    // Don't update children levels - they should keep their current levels
+    // Only the parent relationships change
 
     renderMindmap();
     selectNode(selectedNodeId, false);
