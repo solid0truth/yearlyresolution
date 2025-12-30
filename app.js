@@ -570,23 +570,25 @@ function demoteNodeLevel() {
         return;
     }
 
-    // Find previous sibling to become parent
-    const siblings = nodes.filter(n =>
-        n.parent === node.parent &&
-        n.level === node.level &&
-        n.id !== selectedNodeId
-    );
+    // Find the immediate previous sibling in the nodes array
+    const currentIndex = nodes.findIndex(n => n.id === selectedNodeId);
+    let previousSibling = null;
 
-    if (siblings.length === 0) {
-        console.log('No sibling to demote under');
+    // Look backwards from current position for a sibling
+    for (let i = currentIndex - 1; i >= 0; i--) {
+        if (nodes[i].parent === node.parent && nodes[i].level === node.level) {
+            previousSibling = nodes[i];
+            break;
+        }
+    }
+
+    if (!previousSibling) {
+        console.log('No previous sibling to demote under');
         return;
     }
 
-    // Use the last sibling as new parent
-    const newParent = siblings[siblings.length - 1];
-
-    // Demote: make this node a child of previous sibling
-    node.parent = newParent.id;
+    // Demote: make this node a child of the previous sibling
+    node.parent = previousSibling.id;
     node.level = `L${currentLevel + 1}`;
 
     // Update all children levels recursively
