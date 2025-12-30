@@ -140,10 +140,6 @@ h1 {
     flex: 1;
 }
 
-.node-title:hover {
-    background: rgba(0, 122, 255, 0.1);
-}
-
 .node-title[contenteditable="true"] {
     outline: 2px solid #007aff;
     background: white;
