@@ -570,15 +570,21 @@ function demoteNodeLevel() {
         return;
     }
 
-    // Find the immediate previous sibling in the nodes array
-    const currentIndex = nodes.findIndex(n => n.id === selectedNodeId);
+    // Find the visually previous sibling by checking the rendered order
+    const visibleNodes = getAllVisibleNodes();
+    const currentVisualIndex = visibleNodes.indexOf(selectedNodeId);
     let previousSibling = null;
 
-    // Look backwards from current position for a sibling
-    for (let i = currentIndex - 1; i >= 0; i--) {
-        if (nodes[i].parent === node.parent && nodes[i].level === node.level) {
-            previousSibling = nodes[i];
-            break;
+    if (currentVisualIndex > 0) {
+        // Look backwards in visual order for a sibling at the same level
+        for (let i = currentVisualIndex - 1; i >= 0; i--) {
+            const candidateNode = nodes.find(n => n.id === visibleNodes[i]);
+            if (candidateNode &&
+                candidateNode.parent === node.parent &&
+                candidateNode.level === node.level) {
+                previousSibling = candidateNode;
+                break;
+            }
         }
     }
 
