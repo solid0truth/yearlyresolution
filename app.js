@@ -1079,23 +1079,28 @@ function renderNode(node) {
 }
 
 function renderMindmap() {
-    const rootNodes = nodes.filter(n => n.parent === null);
     let html = '';
 
-    function renderTree(nodeId) {
-        const node = nodes.find(n => n.id === nodeId);
-        if (!node) return '';
+    // Helper function to check if a node should be visible
+    function shouldRender(node) {
+        // Root nodes are always visible
+        if (node.parent === null) return true;
 
-        html += renderNode(node);
+        // Check if parent exists and is not collapsed
+        const parent = nodes.find(n => n.id === node.parent);
+        if (!parent) return true; // Orphaned node, show it anyway
+        if (parent.collapsed) return false;
 
-        // Only render children if node is not collapsed
-        if (!node.collapsed) {
-            const children = getChildren(nodeId);
-            children.forEach(child => renderTree(child.id));
-        }
+        // Recursively check if all ancestors are expanded
+        return shouldRender(parent);
     }
 
-    rootNodes.forEach(root => renderTree(root.id));
+    // Render nodes in array order, checking visibility
+    nodes.forEach(node => {
+        if (shouldRender(node)) {
+            html += renderNode(node);
+        }
+    });
 
     document.getElementById('mindmap').innerHTML = html;
     updateDashboard();
