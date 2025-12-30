@@ -397,6 +397,47 @@
             border-bottom: 4px solid #007aff;
         }
 
+        /* Drag preview placeholder */
+        .drag-preview {
+            height: 40px;
+            margin: 8px 0;
+            border: 2px dashed #007aff;
+            background: rgba(0, 122, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+            color: #007aff;
+            font-size: 14px;
+            font-weight: 600;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .drag-preview.child {
+            margin-left: 20px;
+            background: rgba(52, 199, 89, 0.1);
+            border-color: #34c759;
+            color: #34c759;
+        }
+
+        .drag-preview::before {
+            content: '↓ Drop here';
+            opacity: 0.7;
+        }
+
+        .drag-preview.child::before {
+            content: '→ Drop as child';
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
         /* Context menu styles */
         .context-menu-button {
             margin-left: 10px;
@@ -1020,28 +1061,63 @@
             const targetId = parseInt(target.dataset.nodeId);
             if (targetId === draggedNodeId) return;
 
-            // Remove all drag-over classes
-            document.querySelectorAll('.node').forEach(n => {
-                n.classList.remove('drag-over-left', 'drag-over-right', 'drag-over-top', 'drag-over-bottom');
-            });
+            // Remove old preview
+            const oldPreview = document.querySelector('.drag-preview');
+            if (oldPreview) {
+                oldPreview.remove();
+            }
 
             const rect = target.getBoundingClientRect();
             const mouseX = event.clientX - rect.left;
             const mouseY = event.clientY - rect.top;
 
-            // Determine drop position
+            // Create preview element
+            const preview = document.createElement('div');
+            preview.className = 'drag-preview';
+
+            // Determine drop position and insert preview
             if (mouseX < rect.width * 0.25) {
-                target.classList.add('drag-over-left'); // Make child
+                // Make child - insert as first child or after the header
+                preview.classList.add('child');
+                const targetLevel = parseInt(target.dataset.level.substring(1));
+                preview.style.marginLeft = `${(targetLevel) * 20}px`;
+
+                // Find the next sibling or insert after target
+                const nextNode = target.nextElementSibling;
+                if (nextNode && nextNode.classList.contains('node')) {
+                    const nextLevel = parseInt(nextNode.dataset.level.substring(1));
+                    if (nextLevel > targetLevel) {
+                        // Insert before first child
+                        target.parentNode.insertBefore(preview, nextNode);
+                    } else {
+                        // Insert after target (will be first child)
+                        target.insertAdjacentElement('afterend', preview);
+                    }
+                } else {
+                    target.insertAdjacentElement('afterend', preview);
+                }
             } else if (mouseY < rect.height * 0.5) {
-                target.classList.add('drag-over-top'); // Insert before
+                // Insert before (sibling)
+                const targetLevel = parseInt(target.dataset.level.substring(1));
+                preview.style.marginLeft = `${(targetLevel - 1) * 20}px`;
+                target.parentNode.insertBefore(preview, target.previousElementSibling);
             } else {
-                target.classList.add('drag-over-bottom'); // Insert after
+                // Insert after (sibling)
+                const targetLevel = parseInt(target.dataset.level.substring(1));
+                preview.style.marginLeft = `${(targetLevel - 1) * 20}px`;
+                target.insertAdjacentElement('afterend', preview);
             }
         }
 
         function handleDrop(event, targetId) {
             event.preventDefault();
             event.stopPropagation();
+
+            // Remove drag preview
+            const preview = document.querySelector('.drag-preview');
+            if (preview) {
+                preview.remove();
+            }
 
             if (!draggedNodeId || draggedNodeId === targetId) return;
 
@@ -1093,6 +1169,13 @@
             document.querySelectorAll('.node').forEach(n => {
                 n.classList.remove('drag-over-left', 'drag-over-right', 'drag-over-top', 'drag-over-bottom');
             });
+
+            // Remove drag preview
+            const preview = document.querySelector('.drag-preview');
+            if (preview) {
+                preview.remove();
+            }
+
             draggedNodeId = null;
             draggedNode = null;
         }
