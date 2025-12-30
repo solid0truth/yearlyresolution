@@ -139,6 +139,19 @@ function editSelectedNodeTitle() {
     startEditingTitle(selectedNodeId);
 }
 
+// Handle double-click on title
+function handleTitleDoubleClick(nodeId) {
+    const details = document.getElementById(`details-${nodeId}`);
+
+    // If details are expanded, collapse them instead of editing
+    if (details && details.classList.contains('expanded')) {
+        toggleNode(nodeId);
+    } else {
+        // If details are collapsed, start editing the title
+        startEditingTitle(nodeId);
+    }
+}
+
 // Toggle inline display of attributes
 function toggleInlineDisplay(nodeId, attr, checked) {
     const node = nodes.find(n => n.id === nodeId);
@@ -1076,7 +1089,7 @@ function renderNode(node) {
                 <span class="node-title"
                       contenteditable="false"
                       id="title-${node.id}"
-                      ondblclick="event.stopPropagation(); startEditingTitle(${node.id})"
+                      ondblclick="event.stopPropagation(); handleTitleDoubleClick(${node.id})"
                       onblur="finishEditingTitle(${node.id})"
                       onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();} if(event.key==='Escape'){event.preventDefault();event.stopPropagation();this.textContent='${node.title.replace(/'/g, "\\'")}';this.blur();}"
                       style="cursor: default; padding: 2px 4px; border-radius: 3px;">${node.title}</span>
