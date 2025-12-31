@@ -1106,7 +1106,14 @@ function renderNode(node) {
                 ${budgetHTML}
                 <div class="detail-grid">
                     <div class="detail-item">
-                        <label class="detail-label">Long-term Goal (1+ years)</label>
+                        <label class="detail-label" style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox"
+                                   ${(node.inlineDisplay || []).includes('longTermGoal') ? 'checked' : ''}
+                                   onchange="toggleInlineDisplay(${node.id}, 'longTermGoal', this.checked)"
+                                   style="width: auto; cursor: pointer;"
+                                   title="접었을 때 표시">
+                            <span>🎯 Long-term Goal (1+ years)</span>
+                        </label>
                         <div class="detail-value">
                             <textarea onchange="updateNode(${node.id}, 'longTermGoal', this.value)"
                                       placeholder="장기 목표 및 비전..."
@@ -1114,7 +1121,14 @@ function renderNode(node) {
                         </div>
                     </div>
                     <div class="detail-item">
-                        <label class="detail-label">2026 Goal</label>
+                        <label class="detail-label" style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox"
+                                   ${(node.inlineDisplay || []).includes('yearGoal') ? 'checked' : ''}
+                                   onchange="toggleInlineDisplay(${node.id}, 'yearGoal', this.checked)"
+                                   style="width: auto; cursor: pointer;"
+                                   title="접었을 때 표시">
+                            <span>📆 2026 Goal</span>
+                        </label>
                         <div class="detail-value">
                             <textarea onchange="updateNode(${node.id}, 'yearGoal', this.value)"
                                       placeholder="올해 달성할 목표..."
@@ -1122,7 +1136,14 @@ function renderNode(node) {
                         </div>
                     </div>
                     <div class="detail-item">
-                        <label class="detail-label">Action</label>
+                        <label class="detail-label" style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox"
+                                   ${(node.inlineDisplay || []).includes('action') ? 'checked' : ''}
+                                   onchange="toggleInlineDisplay(${node.id}, 'action', this.checked)"
+                                   style="width: auto; cursor: pointer;"
+                                   title="접었을 때 표시">
+                            <span>📋 Action</span>
+                        </label>
                         <div class="detail-value">
                             <input type="text" value="${node.action || ''}"
                                    onchange="updateNode(${node.id}, 'action', this.value)"
@@ -1130,7 +1151,14 @@ function renderNode(node) {
                         </div>
                     </div>
                     <div class="detail-item">
-                        <label class="detail-label">When</label>
+                        <label class="detail-label" style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox"
+                                   ${(node.inlineDisplay || []).includes('when') ? 'checked' : ''}
+                                   onchange="toggleInlineDisplay(${node.id}, 'when', this.checked)"
+                                   style="width: auto; cursor: pointer;"
+                                   title="접었을 때 표시">
+                            <span>📅 When</span>
+                        </label>
                         <div class="detail-value">
                             <input type="text" value="${node.when || ''}"
                                    onchange="updateNode(${node.id}, 'when', this.value)"
@@ -1138,7 +1166,14 @@ function renderNode(node) {
                         </div>
                     </div>
                     <div class="detail-item">
-                        <label class="detail-label">Where</label>
+                        <label class="detail-label" style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox"
+                                   ${(node.inlineDisplay || []).includes('where') ? 'checked' : ''}
+                                   onchange="toggleInlineDisplay(${node.id}, 'where', this.checked)"
+                                   style="width: auto; cursor: pointer;"
+                                   title="접었을 때 표시">
+                            <span>📍 Where</span>
+                        </label>
                         <div class="detail-value">
                             <input type="text" value="${node.where || ''}"
                                    onchange="updateNode(${node.id}, 'where', this.value)"
@@ -1146,7 +1181,14 @@ function renderNode(node) {
                         </div>
                     </div>
                     <div class="detail-item">
-                        <label class="detail-label">With</label>
+                        <label class="detail-label" style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox"
+                                   ${(node.inlineDisplay || []).includes('with') ? 'checked' : ''}
+                                   onchange="toggleInlineDisplay(${node.id}, 'with', this.checked)"
+                                   style="width: auto; cursor: pointer;"
+                                   title="접었을 때 표시">
+                            <span>👥 With</span>
+                        </label>
                         <div class="detail-value">
                             <input type="text" value="${node.with || ''}"
                                    onchange="updateNode(${node.id}, 'with', this.value)"
@@ -1154,7 +1196,14 @@ function renderNode(node) {
                         </div>
                     </div>
                     <div class="detail-item">
-                        <label class="detail-label">Learn and Study</label>
+                        <label class="detail-label" style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox"
+                                   ${(node.inlineDisplay || []).includes('knowledge') ? 'checked' : ''}
+                                   onchange="toggleInlineDisplay(${node.id}, 'knowledge', this.checked)"
+                                   style="width: auto; cursor: pointer;"
+                                   title="접었을 때 표시">
+                            <span>📖 Learn and Study</span>
+                        </label>
                         <div class="detail-value">
                             <input type="text" value="${node.knowledge || ''}"
                                    onchange="updateNode(${node.id}, 'knowledge', this.value)"
@@ -1162,7 +1211,14 @@ function renderNode(node) {
                         </div>
                     </div>
                     <div class="detail-item">
-                        <label class="detail-label">Tools and Equipments</label>
+                        <label class="detail-label" style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox"
+                                   ${(node.inlineDisplay || []).includes('tools') ? 'checked' : ''}
+                                   onchange="toggleInlineDisplay(${node.id}, 'tools', this.checked)"
+                                   style="width: auto; cursor: pointer;"
+                                   title="접었을 때 표시">
+                            <span>🔧 Tools and Equipments</span>
+                        </label>
                         <div class="detail-value">
                             <input type="text" value="${node.tools || ''}"
                                    onchange="updateNode(${node.id}, 'tools', this.value)"
@@ -1171,7 +1227,7 @@ function renderNode(node) {
                     </div>
                     ${hasChildren ? `
                         <div class="detail-item">
-                            <label class="detail-label">Time Budget</label>
+                            <label class="detail-label">⏱ Time Budget</label>
                             <div class="detail-value">
                                 <input type="text" value="${node.timeBudget || ''}"
                                        onchange="updateNode(${node.id}, 'timeBudget', this.value)"
@@ -1179,7 +1235,7 @@ function renderNode(node) {
                             </div>
                         </div>
                         <div class="detail-item">
-                            <label class="detail-label">Money Budget</label>
+                            <label class="detail-label">💰 Money Budget</label>
                             <div class="detail-value">
                                 <input type="text" value="${node.moneyBudget || ''}"
                                        onchange="updateNode(${node.id}, 'moneyBudget', this.value)"
@@ -1187,7 +1243,7 @@ function renderNode(node) {
                             </div>
                         </div>
                         <div class="detail-item">
-                            <label class="detail-label">Book Budget</label>
+                            <label class="detail-label">📚 Book Budget</label>
                             <div class="detail-value">
                                 <input type="text" value="${node.bookBudget || ''}"
                                        onchange="updateNode(${node.id}, 'bookBudget', this.value)"
@@ -1196,7 +1252,14 @@ function renderNode(node) {
                         </div>
                     ` : `
                         <div class="detail-item">
-                            <label class="detail-label">Time</label>
+                            <label class="detail-label" style="display: flex; align-items: center; gap: 6px;">
+                                <input type="checkbox"
+                                       ${(node.inlineDisplay || []).includes('time') ? 'checked' : ''}
+                                       onchange="toggleInlineDisplay(${node.id}, 'time', this.checked)"
+                                       style="width: auto; cursor: pointer;"
+                                       title="접었을 때 표시">
+                                <span>⏱ Time</span>
+                            </label>
                             <div class="detail-value">
                                 <input type="text" value="${node.time || ''}"
                                        onchange="updateNode(${node.id}, 'time', this.value)"
@@ -1204,7 +1267,14 @@ function renderNode(node) {
                             </div>
                         </div>
                         <div class="detail-item">
-                            <label class="detail-label">Money</label>
+                            <label class="detail-label" style="display: flex; align-items: center; gap: 6px;">
+                                <input type="checkbox"
+                                       ${(node.inlineDisplay || []).includes('money') ? 'checked' : ''}
+                                       onchange="toggleInlineDisplay(${node.id}, 'money', this.checked)"
+                                       style="width: auto; cursor: pointer;"
+                                       title="접었을 때 표시">
+                                <span>💰 Money</span>
+                            </label>
                             <div class="detail-value">
                                 <input type="text" value="${node.money || ''}"
                                        onchange="updateNode(${node.id}, 'money', this.value)"
@@ -1212,7 +1282,14 @@ function renderNode(node) {
                             </div>
                         </div>
                         <div class="detail-item">
-                            <label class="detail-label">Book</label>
+                            <label class="detail-label" style="display: flex; align-items: center; gap: 6px;">
+                                <input type="checkbox"
+                                       ${(node.inlineDisplay || []).includes('book') ? 'checked' : ''}
+                                       onchange="toggleInlineDisplay(${node.id}, 'book', this.checked)"
+                                       style="width: auto; cursor: pointer;"
+                                       title="접었을 때 표시">
+                                <span>📚 Book</span>
+                            </label>
                             <div class="detail-value">
                                 <input type="text" value="${node.book || ''}"
                                        onchange="updateNode(${node.id}, 'book', this.value)"
@@ -1220,67 +1297,6 @@ function renderNode(node) {
                             </div>
                         </div>
                     `}
-                    <div class="detail-item">
-                        <label class="detail-label">Record</label>
-                        <div class="detail-value" style="display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox"
-                                   id="record-check-${node.id}"
-                                   ${node.recordEnabled ? 'checked' : ''}
-                                   onchange="updateNode(${node.id}, 'recordEnabled', this.checked)"
-                                   style="width: auto; cursor: pointer;">
-                            <select onchange="updateNode(${node.id}, 'recordFrequency', this.value)"
-                                    ${!node.recordEnabled ? 'disabled' : ''}
-                                    style="flex: 1; padding: 8px; border: 1px solid #d2d2d7; border-radius: 6px; font-size: 14px;">
-                                <option value="daily" ${node.recordFrequency === 'daily' ? 'selected' : ''}>Daily</option>
-                                <option value="weekly" ${node.recordFrequency === 'weekly' ? 'selected' : ''}>Weekly</option>
-                                <option value="monthly" ${node.recordFrequency === 'monthly' ? 'selected' : ''}>Monthly</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <label class="detail-label">Share</label>
-                        <div class="detail-value" style="display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox"
-                                   id="share-check-${node.id}"
-                                   ${node.shareEnabled ? 'checked' : ''}
-                                   onchange="updateNode(${node.id}, 'shareEnabled', this.checked)"
-                                   style="width: auto; cursor: pointer;">
-                            <input type="text"
-                                   value="${node.shareTo || ''}"
-                                   onchange="updateNode(${node.id}, 'shareTo', this.value)"
-                                   ${!node.shareEnabled ? 'disabled' : ''}
-                                   placeholder="blog, instagram, linkedin..."
-                                   style="flex: 1; padding: 8px; border: 1px solid #d2d2d7; border-radius: 6px; font-size: 14px;">
-                        </div>
-                    </div>
-                    <div class="detail-item" style="grid-column: 1 / -1;">
-                        <label class="detail-label">접었을 때 제목 옆에 표시할 속성</label>
-                        <div class="detail-value" style="display: flex; flex-wrap: wrap; gap: 12px;">
-                            ${['longTermGoal', 'yearGoal', 'action', 'when', 'where', 'with', 'knowledge', 'tools', 'time', 'money', 'book'].map(attr => {
-                                const labels = {
-                                    longTermGoal: '🎯 장기목표',
-                                    yearGoal: '📆 올해목표',
-                                    action: '📋 행동',
-                                    when: '📅 언제',
-                                    where: '📍 어디서',
-                                    with: '👥 누구와',
-                                    knowledge: '📖 배움',
-                                    tools: '🔧 도구',
-                                    time: '⏱ 시간',
-                                    money: '💰 비용',
-                                    book: '📚 책'
-                                };
-                                const isChecked = (node.inlineDisplay || []).includes(attr);
-                                return `<label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
-                                    <input type="checkbox"
-                                           ${isChecked ? 'checked' : ''}
-                                           onchange="toggleInlineDisplay(${node.id}, '${attr}', this.checked)"
-                                           style="cursor: pointer;">
-                                    <span style="font-size: 13px;">${labels[attr]}</span>
-                                </label>`;
-                            }).join('')}
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
