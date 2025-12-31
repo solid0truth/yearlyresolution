@@ -1045,7 +1045,7 @@ function renderNode(node) {
             }
         });
         if (inlineItems.length > 0) {
-            inlineHTML = `<span class="inline-display" style="color: #86868b; font-size: 0.9em; margin-left: 4px;">${inlineItems.join(' · ')}</span>`;
+            inlineHTML = `<span class="inline-display" style="color: #86868b; font-size: 0.9em;">${inlineItems.join(' · ')}</span>`;
         }
     }
 
@@ -1087,14 +1087,16 @@ function renderNode(node) {
                       id="icon-${node.id}"
                       onclick="${hasChildren ? `event.stopPropagation(); toggleNodeCollapse(${node.id})` : ''}"
                       style="${hasChildren ? 'cursor: pointer;' : ''}">${hasChildren ? '▶' : '●'}</span>
-                <span class="node-title"
-                      contenteditable="false"
-                      id="title-${node.id}"
-                      ondblclick="event.stopPropagation(); handleTitleDoubleClick(${node.id})"
-                      onblur="finishEditingTitle(${node.id})"
-                      onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();} if(event.key==='Escape'){event.preventDefault();event.stopPropagation();this.textContent='${node.title.replace(/'/g, "\\'")}';this.blur();}"
-                      style="cursor: default; padding: 2px 4px; border-radius: 3px;">${node.title}</span>
-                ${inlineHTML}
+                <span style="display: inline-flex; align-items: center; gap: 2px;">
+                    <span class="node-title"
+                          contenteditable="false"
+                          id="title-${node.id}"
+                          ondblclick="event.stopPropagation(); handleTitleDoubleClick(${node.id})"
+                          onblur="finishEditingTitle(${node.id})"
+                          onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();} if(event.key==='Escape'){event.preventDefault();event.stopPropagation();this.textContent='${node.title.replace(/'/g, "\\'")}';this.blur();}"
+                          style="cursor: default; padding: 2px 4px; border-radius: 3px;">${node.title}</span>
+                    ${inlineHTML}
+                </span>
                 ${summary}
                 <button class="context-menu-button" onclick="event.stopPropagation(); toggleContextMenu(${node.id}, event)">⋯</button>
                 <div class="context-menu" id="context-menu-${node.id}">
