@@ -1045,7 +1045,7 @@ function renderNode(node) {
             }
         });
         if (inlineItems.length > 0) {
-            inlineHTML = `<span class="inline-display" style="color: #86868b; font-size: 0.9em; margin-left: 8px;">${inlineItems.join(' · ')}</span>`;
+            inlineHTML = `<span class="inline-display" style="color: #86868b; font-size: 0.9em; margin-left: 4px;">${inlineItems.join(' · ')}</span>`;
         }
     }
 
