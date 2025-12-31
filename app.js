@@ -1225,6 +1225,27 @@ function renderNode(node) {
                                    placeholder="Required tools or equipment">
                         </div>
                     </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Record</label>
+                        <div class="detail-value">
+                            <select onchange="updateNode(${node.id}, 'recordFrequency', this.value)"
+                                    style="width: 100%; padding: 8px; border: 1px solid #d2d2d7; border-radius: 6px; font-size: 14px;">
+                                <option value="daily" ${node.recordFrequency === 'daily' ? 'selected' : ''}>Daily</option>
+                                <option value="weekly" ${node.recordFrequency === 'weekly' ? 'selected' : ''}>Weekly</option>
+                                <option value="monthly" ${node.recordFrequency === 'monthly' ? 'selected' : ''}>Monthly</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Share</label>
+                        <div class="detail-value">
+                            <input type="text"
+                                   value="${node.shareTo || ''}"
+                                   onchange="updateNode(${node.id}, 'shareTo', this.value)"
+                                   placeholder="blog, instagram, linkedin..."
+                                   style="width: 100%; padding: 8px; border: 1px solid #d2d2d7; border-radius: 6px; font-size: 14px;">
+                        </div>
+                    </div>
                     ${hasChildren ? `
                         <div class="detail-item">
                             <label class="detail-label">⏱ Time Budget</label>
@@ -1297,39 +1318,6 @@ function renderNode(node) {
                             </div>
                         </div>
                     `}
-                    <div class="detail-item">
-                        <label class="detail-label">Record</label>
-                        <div class="detail-value" style="display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox"
-                                   id="record-check-${node.id}"
-                                   ${node.recordEnabled ? 'checked' : ''}
-                                   onchange="updateNode(${node.id}, 'recordEnabled', this.checked)"
-                                   style="width: auto; cursor: pointer;">
-                            <select onchange="updateNode(${node.id}, 'recordFrequency', this.value)"
-                                    ${!node.recordEnabled ? 'disabled' : ''}
-                                    style="flex: 1; padding: 8px; border: 1px solid #d2d2d7; border-radius: 6px; font-size: 14px;">
-                                <option value="daily" ${node.recordFrequency === 'daily' ? 'selected' : ''}>Daily</option>
-                                <option value="weekly" ${node.recordFrequency === 'weekly' ? 'selected' : ''}>Weekly</option>
-                                <option value="monthly" ${node.recordFrequency === 'monthly' ? 'selected' : ''}>Monthly</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <label class="detail-label">Share</label>
-                        <div class="detail-value" style="display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox"
-                                   id="share-check-${node.id}"
-                                   ${node.shareEnabled ? 'checked' : ''}
-                                   onchange="updateNode(${node.id}, 'shareEnabled', this.checked)"
-                                   style="width: auto; cursor: pointer;">
-                            <input type="text"
-                                   value="${node.shareTo || ''}"
-                                   onchange="updateNode(${node.id}, 'shareTo', this.value)"
-                                   ${!node.shareEnabled ? 'disabled' : ''}
-                                   placeholder="blog, instagram, linkedin..."
-                                   style="flex: 1; padding: 8px; border: 1px solid #d2d2d7; border-radius: 6px; font-size: 14px;">
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
