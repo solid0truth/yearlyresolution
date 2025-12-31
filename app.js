@@ -1087,14 +1087,18 @@ function renderNode(node) {
                       id="icon-${node.id}"
                       onclick="${hasChildren ? `event.stopPropagation(); toggleNodeCollapse(${node.id})` : ''}"
                       style="${hasChildren ? 'cursor: pointer;' : ''}">${hasChildren ? '▶' : '●'}</span>
-                <span class="node-title"
-                      contenteditable="false"
-                      id="title-${node.id}"
-                      ondblclick="event.stopPropagation(); handleTitleDoubleClick(${node.id})"
-                      onblur="finishEditingTitle(${node.id})"
-                      onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();} if(event.key==='Escape'){event.preventDefault();event.stopPropagation();this.textContent='${node.title.replace(/'/g, "\\'")}';this.blur();}"
-                      style="cursor: default; padding: 2px 4px; border-radius: 3px;">${node.title}</span>${inlineHTML}
-                ${summary}
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <span class="node-title"
+                          contenteditable="false"
+                          id="title-${node.id}"
+                          ondblclick="event.stopPropagation(); handleTitleDoubleClick(${node.id})"
+                          onblur="finishEditingTitle(${node.id})"
+                          onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();} if(event.key==='Escape'){event.preventDefault();event.stopPropagation();this.textContent='${node.title.replace(/'/g, "\\'")}';this.blur();}"
+                          style="cursor: default; padding: 2px 4px; border-radius: 3px;">${node.title}</span>${inlineHTML}
+                </div>
+                <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+                    ${summary}
+                </div>
                 <button class="context-menu-button" onclick="event.stopPropagation(); toggleContextMenu(${node.id}, event)">⋯</button>
                 <div class="context-menu" id="context-menu-${node.id}">
                     <div class="context-menu-item" onclick="event.stopPropagation(); duplicateNode(${node.id}); closeAllContextMenus();">Duplicate</div>
