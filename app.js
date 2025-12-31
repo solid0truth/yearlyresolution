@@ -1087,14 +1087,14 @@ function renderNode(node) {
                       id="icon-${node.id}"
                       onclick="${hasChildren ? `event.stopPropagation(); toggleNodeCollapse(${node.id})` : ''}"
                       style="${hasChildren ? 'cursor: pointer;' : ''}">${hasChildren ? '▶' : '●'}</span>
-                <div style="display: flex; align-items: center; flex: 1;">
+                <div style="display: flex; align-items: center; flex: 1; gap: 0;">
                     <span class="node-title"
                           contenteditable="false"
                           id="title-${node.id}"
                           ondblclick="event.stopPropagation(); handleTitleDoubleClick(${node.id})"
                           onblur="finishEditingTitle(${node.id})"
                           onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();} if(event.key==='Escape'){event.preventDefault();event.stopPropagation();this.textContent='${node.title.replace(/'/g, "\\'")}';this.blur();}"
-                          style="cursor: default; padding: 2px 4px; border-radius: 3px;">${node.title}</span>${inlineHTML}
+                          style="cursor: default; padding: 2px 4px; border-radius: 3px; margin-right: 0;">${node.title}</span><span style="display: inline; padding-left: 2px;">${inlineHTML}</span>
                 </div>
                 <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
                     ${summary}
