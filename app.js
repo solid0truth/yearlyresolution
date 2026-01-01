@@ -1615,6 +1615,35 @@ async function loadData() {
     }
 }
 
+async function loadExample() {
+    const confirmed = confirm('예제 데이터를 불러오시겠습니까?\n\n현재 작업 중인 데이터는 덮어씌워집니다.\n(취소하면 현재 데이터가 유지됩니다)');
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch('data.json');
+        if (!response.ok) {
+            throw new Error('Failed to load data.json');
+        }
+        nodes = await response.json();
+        nextId = Math.max(...nodes.map(n => n.id)) + 1;
+
+        // Save to localStorage
+        saveData();
+
+        // Re-render
+        renderMindmap();
+
+        console.log('Loaded example data from data.json');
+        alert('예제 데이터를 성공적으로 불러왔습니다!');
+    } catch (error) {
+        console.error('Error loading example data:', error);
+        alert('예제 데이터 로드 실패: ' + error.message);
+    }
+}
+
 function exportCSV() {
     const headers = ['Level', 'Title', 'Parent', 'Long-term Goal', '2026 Goal', 'Action', 'When', 'Where', 'With',
                    'Learn and Study', 'Tools and Equipments', 'Time', 'Money', 'Book', 'Record Enabled', 'Record Frequency', 'Share Enabled', 'Share To', 'Time Budget', 'Money Budget', 'Book Budget'];
