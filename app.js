@@ -14,6 +14,8 @@
  * - Dynamic data loading from data.json
  */
 
+console.log('app.js loaded successfully');
+
 // Global state variables
 let nodes = [];
 let nextId = 1;
@@ -1655,6 +1657,9 @@ async function loadExample() {
         alert('❌ 예제 데이터 로드 실패\n\n에러: ' + error.message + '\n\n브라우저 콘솔(F12)에서 자세한 내용을 확인하세요.');
     }
 }
+
+// Make function globally accessible
+window.loadExample = loadExample;
 
 function exportCSV() {
     const headers = ['Level', 'Title', 'Parent', 'Long-term Goal', '2026 Goal', 'Action', 'When', 'Where', 'With',
