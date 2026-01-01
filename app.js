@@ -1616,31 +1616,43 @@ async function loadData() {
 }
 
 async function loadExample() {
+    console.log('loadExample() called');
+
     const confirmed = confirm('예제 데이터를 불러오시겠습니까?\n\n현재 작업 중인 데이터는 덮어씌워집니다.\n(취소하면 현재 데이터가 유지됩니다)');
 
     if (!confirmed) {
+        console.log('User cancelled');
         return;
     }
 
+    console.log('Fetching data.json...');
+
     try {
         const response = await fetch('data.json');
+        console.log('Response status:', response.status);
+
         if (!response.ok) {
-            throw new Error('Failed to load data.json');
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-        nodes = await response.json();
+
+        const data = await response.json();
+        console.log('Loaded nodes:', data.length);
+
+        nodes = data;
         nextId = Math.max(...nodes.map(n => n.id)) + 1;
 
         // Save to localStorage
         saveData();
+        console.log('Saved to localStorage');
 
         // Re-render
         renderMindmap();
+        console.log('Mindmap rendered');
 
-        console.log('Loaded example data from data.json');
-        alert('예제 데이터를 성공적으로 불러왔습니다!');
+        alert('✅ 예제 데이터를 성공적으로 불러왔습니다!\n\n총 ' + nodes.length + '개의 노드가 로드되었습니다.');
     } catch (error) {
         console.error('Error loading example data:', error);
-        alert('예제 데이터 로드 실패: ' + error.message);
+        alert('❌ 예제 데이터 로드 실패\n\n에러: ' + error.message + '\n\n브라우저 콘솔(F12)에서 자세한 내용을 확인하세요.');
     }
 }
 
